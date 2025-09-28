@@ -1,86 +1,67 @@
-# 🧀 Cheese Factory - AWS Infrastructure con Terraform
+# Cheese Factory - Mi primer proyecto con Terraform
 
-[![Terraform](https://img.shields.io/badge/Terraform-v1.13+-623CE4?style=flat&logo=terraform&logoColor=white)](https://www.terraform.io/)
-[![AWS](https://img.shields.io/badge/AWS-EC2%20%7C%20RDS%20%7C%20VPC-FF9900?style=flat&logo=amazon-aws&logoColor=white)](https://aws.amazon.com/)
+Mi primera experiencia creando infraestructura en AWS usando Terraform. 
 
-Infraestructura como código usando Terraform para desplegar 3 instancias EC2 con contenedores Docker de quesos, Application Load Balancer y base de datos MySQL RDS en AWS.
+Este proyecto crea 3 servidores web con diferentes tipos de queso usando contenedores Docker.
 
-## 🏗️ Componentes
+## Lo que aprendí
 
-- **3 Instancias EC2** (t2.micro) → Wensleydale, Cheddar, Stilton
-- **Application Load Balancer** → Distribución de tráfico
-- **RDS MySQL** → Base de datos en subnets privadas
-- **VPC + Subnets** → Calculadas automáticamente con `cidrsubnet()`
+- Crear instancias EC2 con Terraform
+- Usar Docker en servidores de AWS
+- Configurar redes (VPC y subnets)
+- Variables en Terraform
+- Mi primera base de datos RDS
 
-## 🚀 Despliegue Rápido
+## Cómo usar este proyecto
 
-### 1. Prerrequisitos
+### Necesitas tener:
+- Terraform instalado
+- AWS CLI configurado con tus credenciales
+- Una Key Pair creada en AWS
+
+### Pasos:
+1. Clona este repositorio
+2. Copia `terraform.tfvars.example` a `terraform.tfvars`
+3. Edita `terraform.tfvars` con tus datos:
+   ```
+   my_ip = "tu.ip.publica/32"
+   key_name = "tu-key-pair"
+   db_password = "unPasswordSeguro123"
+   ```
+4. Ejecuta:
+   ```bash
+   terraform init
+   terraform plan
+   terraform apply
+   ```
+
+### Para ver los resultados:
 ```bash
-# Instalar Terraform >= 1.0
-# Configurar AWS CLI
-aws configure
-
-# Verificar credenciales
-aws sts get-caller-identity
-```
-
-### 2. Configuración
-```bash
-# Clonar y configurar
-git clone https://github.com/edoturb/chesse-factory-terraform.git
-cd chesse-factory-terraform
-cp terraform.tfvars.example terraform.tfvars
-
-# Editar terraform.tfvars con tus valores
-my_ip    = "$(curl -s ifconfig.me)/32"  # Tu IP pública
-key_name = "tu-aws-key-pair"            # Key Pair existente
-db_password = "TuPassword123!"          # Contraseña de la BD
-```
-
-### 3. Desplegar
-```bash
-terraform init
-terraform plan
-terraform apply  # Confirma con 'yes'
-```
-
-### 4. Acceder
-```bash
-# Ver todos los outputs
 terraform output
-
-# URL del Load Balancer
-terraform output alb_url
-
-# IPs individuales de instancias
-terraform output instance_ips
 ```
 
-## 🧹 Limpiar Recursos
+## Eliminar todo
+Cuando termines de probar:
 ```bash
-terraform destroy  # Confirma con 'yes'
+terraform destroy
 ```
+(Escribe `yes` para confirmar)
 
-## 🔧 Troubleshooting
+## Problemas que tuve y cómo los resolví
 
-| Error | Solución |
-|-------|----------|
-| Credenciales AWS | `aws configure` |
-| Key Pair no encontrado | `aws ec2 describe-key-pairs` |
-| IP cambió | Actualizar `terraform.tfvars` |
+- **Error de credenciales**: Ejecutar `aws configure` otra vez
+- **Key Pair no existe**: Crear uno nuevo en la consola de AWS
+- **Mi IP cambió**: Actualizar el archivo `terraform.tfvars`
 
-## 📄 Variables Principales
+## Archivos importantes
 
-```hcl
-# terraform.tfvars (requeridas)
-my_ip = "TU_IP/32"
-key_name = "tu-key-pair"
-db_password = "password123"
-```
+- `main.tf` - Aquí está toda la configuración
+- `variables.tf` - Las variables que uso
+- `terraform.tfvars` - Mis valores personales (no está en git)
 
 ---
 
-**Proyecto de infraestructura como código usando Terraform con funciones nativas y expresiones condicionales**
+*Mi primer proyecto con Terraform - aprendiendo Infrastructure as Code paso a paso*
 
 ## 📊 Outputs
 
