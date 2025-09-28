@@ -2,145 +2,85 @@
 
 [![Terraform](https://img.shields.io/badge/Terraform-v1.13+-623CE4?style=flat&logo=terraform&logoColor=white)](https://www.terraform.io/)
 [![AWS](https://img.shields.io/badge/AWS-EC2%20%7C%20RDS%20%7C%20VPC-FF9900?style=flat&logo=amazon-aws&logoColor=white)](https://aws.amazon.com/)
-[![Docker](https://img.shields.io/badge/Docker-Cheese%20Containers-2496ED?style=flat&logo=docker&logoColor=white)](https://hub.docker.com/r/errm/cheese)
 
-Despliegue automatizado de una aplicación web con imágenes de quesos usando **Terraform** en AWS. El proyecto crea 3 servidores EC2 con diferentes tipos de queso en contenedores Docker, distribuidos por un Application Load Balancer, junto con una base de datos MySQL RDS.
+Infraestructura como código usando Terraform para desplegar 3 instancias EC2 con contenedores Docker de quesos, Application Load Balancer y base de datos MySQL RDS en AWS.
 
-## 📋 Tabla de Contenidos
+## 🏗️ Componentes
 
-- [🏗️ Arquitectura](#️-arquitectura)
-- [🧀 Tipos de Queso](#-tipos-de-queso-disponibles)
-- [🔧 Conceptos de Terraform](#-conceptos-de-terraform-implementados)
-- [🚀 Despliegue](#-cómo-usar)
-- [📊 Outputs](#-outputs)
-- [🧹 Limpieza](#-destruir-infraestructura)
+- **3 Instancias EC2** (t2.micro) → Wensleydale, Cheddar, Stilton
+- **Application Load Balancer** → Distribución de tráfico
+- **RDS MySQL** → Base de datos en subnets privadas
+- **VPC + Subnets** → Calculadas automáticamente con `cidrsubnet()`
 
-## 🏗️ Arquitectura
+## 🚀 Despliegue Rápido
 
-- **3 Instancias EC2** (t2.micro) con contenedores Docker
-- **Application Load Balancer** para distribución de tráfico
-- **VPC** con subnets públicas y privadas calculadas automáticamente
-- **Base de Datos RDS MySQL** con almacenamiento cifrado
-- **Security Groups** configurados para acceso HTTP/SSH/MySQL
-
-## 🧀 Tipos de Queso Disponibles
-
-| Instancia | Tipo de Queso | Imagen Docker | Estado |
-|-----------|---------------|---------------|---------|
-| 1 | **Wensleydale** | `errm/cheese:wensleydale` | ⭐ **Primaria** |
-| 2 | **Cheddar** | `errm/cheese:cheddar` | 🟢 Activa |
-| 3 | **Stilton** | `errm/cheese:stilton` | 🟢 Activa |
-
-##  Conceptos de Terraform Implementados
-
-### Variables Reutilizables
-- **`aws_region`**: Región de AWS para el despliegue
-- **`instance_type`**: Tipo de instancia EC2 (t2.micro por defecto)
-- **`cheese_images`**: Lista de imágenes Docker de quesos
-- **`vpc_cidr`**: Rango CIDR para la VPC
-- **`instance_count`**: Número de instancias a crear
-- **`db_password`**: Contraseña para la base de datos RDS (sensible)
-- **`db_instance_class`**: Clase de instancia RDS (db.t3.micro por defecto)
-- **`db_allocated_storage`**: Almacenamiento de la base de datos en GB
-
-### Expresiones Condicionales
-```hcl
-# Instancias EC2 - Tag IsPrimary
-tags = {
-  Name      = "cheese-web-${count.index + 1}"
-  IsPrimary = count.index == 0 ? "true" : "false"  # Solo la primera instancia (Wensleydale)
-}
-
-# Base de Datos RDS - Configuración condicional
-backup_retention_period = length(var.cheese_images) > 2 ? 7 : 3  # 7 días si hay más de 2 quesos
-Environment = var.db_allocated_storage > 20 ? "production" : "development"  # Tag según almacenamiento
-```
-La primera instancia (índice 0) que ejecuta Wensleydale recibe el tag `IsPrimary = "true"`. La base de datos ajusta automáticamente la retención de backups y etiquetas según la configuración.
-
-### Funciones Nativas (Built-in Functions)
-
-#### 1. `cidrsubnet()` - Cálculo Automático de Subnets
-```hcl
-# Subnets públicas para instancias EC2
-cidr_block = cidrsubnet(var.vpc_cidr, 8, count.index)
-
-# Subnets privadas para base de datos RDS  
-cidr_block = cidrsubnet(var.vpc_cidr, 8, count.index + 10)
-```
-**Propósito**: Calcula automáticamente los rangos CIDR para cada subnet.
-- **VPC CIDR**: `10.0.0.0/16`
-- **Subnets Públicas**: `10.0.0.0/24`, `10.0.1.0/24`, `10.0.2.0/24`
-- **Subnets Privadas**: `10.0.10.0/24`, `10.0.11.0/24` (para RDS)
-
-#### 2. `element()` - Selección de Elementos de Lista
-```hcl
-availability_zone = element(data.aws_availability_zones.available.names, count.index)
-docker_image = element(var.cheese_images, count.index)
-```
-**Propósito**: Selecciona elementos de listas de forma cíclica y segura.
-- Distribuye instancias en diferentes zonas de disponibilidad
-- Asigna imágenes Docker específicas a cada instancia
-
-#### 3. `count.index` - Indexación Automática
-**Propósito**: Crea recursos múltiples con identificadores únicos.
-- Genera nombres únicos para recursos
-- Asigna configuraciones específicas por instancia
-
-## 🚀 Cómo Usar
-
-### 📋 1. Prerrequisitos
-- [Terraform](https://www.terraform.io/downloads) >= 1.0
-- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) configurado
-- Cuenta AWS con permisos para EC2, VPC, ELB, RDS
-- Par de claves AWS (Key Pair) creado
-
-### 📥 2. Clonación y Configuración
+### 1. Prerrequisitos
 ```bash
-# Clonar repositorio
-git clone https://github.com/TU_USUARIO/chesse-factory-terraform.git
+# Instalar Terraform >= 1.0
+# Configurar AWS CLI
+aws configure
+
+# Verificar credenciales
+aws sts get-caller-identity
+```
+
+### 2. Configuración
+```bash
+# Clonar y configurar
+git clone https://github.com/edoturb/chesse-factory-terraform.git
 cd chesse-factory-terraform
-
-# Configurar variables
 cp terraform.tfvars.example terraform.tfvars
+
+# Editar terraform.tfvars con tus valores
+my_ip    = "$(curl -s ifconfig.me)/32"  # Tu IP pública
+key_name = "tu-aws-key-pair"            # Key Pair existente
+db_password = "TuPassword123!"          # Contraseña de la BD
 ```
 
-### 3. Configurar `terraform.tfvars`
-```hcl
-# Obtener tu IP pública: curl ifconfig.me
-my_ip    = "TU_IP_PUBLICA/32"    # Ejemplo: "203.0.113.1/32"
-key_name = "TU_AWS_KEY_PAIR"     # Tu AWS Key Pair name
-```
-
-### 4. Desplegar Infraestructura
+### 3. Desplegar
 ```bash
-# Inicializar Terraform
 terraform init
-
-# Revisar plan
 terraform plan
-
-# Aplicar (confirmar con 'yes')
-terraform apply
+terraform apply  # Confirma con 'yes'
 ```
 
-### 5. Acceder a la Aplicación
+### 4. Acceder
 ```bash
-# Obtener URL del Load Balancer
+# Ver todos los outputs
+terraform output
+
+# URL del Load Balancer
 terraform output alb_url
-```
 
-## 🌐 Acceso
-
-### Load Balancer (Recomendado)
-- **URL**: Se muestra en `terraform output alb_url`
-- **Comportamiento**: Distribuye tráfico entre los 3 tipos de queso
-- **Uso**: Refrescar página para ver diferentes quesos
-
-### Acceso Directo a Instancias
-```bash
-# Obtener IPs individuales
+# IPs individuales de instancias
 terraform output instance_ips
 ```
+
+## 🧹 Limpiar Recursos
+```bash
+terraform destroy  # Confirma con 'yes'
+```
+
+## 🔧 Troubleshooting
+
+| Error | Solución |
+|-------|----------|
+| Credenciales AWS | `aws configure` |
+| Key Pair no encontrado | `aws ec2 describe-key-pairs` |
+| IP cambió | Actualizar `terraform.tfvars` |
+
+## 📄 Variables Principales
+
+```hcl
+# terraform.tfvars (requeridas)
+my_ip = "TU_IP/32"
+key_name = "tu-key-pair"
+db_password = "password123"
+```
+
+---
+
+**Proyecto de infraestructura como código usando Terraform con funciones nativas y expresiones condicionales**
 
 ## 📊 Outputs
 
