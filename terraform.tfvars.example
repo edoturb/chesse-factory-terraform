@@ -1,0 +1,53 @@
+# ================================================
+# CHEESE FACTORY - ARCHIVO DE CONFIGURACIÓN EJEMPLO
+# ================================================
+# Copia este archivo como 'terraform.tfvars' y configura con tus valores
+
+# VARIABLES OBLIGATORIAS
+# ================================================
+
+# Tu IP pública para acceso SSH
+# Obtener con: curl ifconfig.me
+my_ip = "YOUR_PUBLIC_IP/32"    # Ejemplo: "203.0.113.1/32"
+
+# Nombre de tu AWS Key Pair (debe existir en AWS)
+# Ver disponibles con: aws ec2 describe-key-pairs
+# Ver disponibles con: aws ec2 describe-key-pairs
+key_name = "YOUR_AWS_KEY_PAIR_NAME"
+
+# VARIABLES OPCIONALES (usar valores por defecto)
+# ================================================
+
+# Región AWS (por defecto: us-east-1)
+# aws_region = "us-west-2"
+
+# Número de instancias (por defecto: 3)
+# instance_count = 3
+
+# Tipo de instancia (por defecto: t2.micro)
+# instance_type = "t2.small"
+
+# Imágenes Docker personalizadas (por defecto: wensleydale, cheddar, stilton)
+# cheese_images = [
+#   "errm/cheese:wensleydale",
+#   "errm/cheese:cheddar", 
+#   "errm/cheese:stilton"
+# ]
+
+# CIDR de la VPC (por defecto: 10.0.0.0/16)
+# vpc_cidr = "172.16.0.0/16"
+
+# CONFIGURACIÓN DE BASE DE DATOS RDS
+# ================================================
+
+# Contraseña del administrador de la base de datos (OBLIGATORIA)
+# IMPORTANTE: Usar una contraseña segura en producción
+db_password = "ChangeMe123!"
+
+# Configuraciones opcionales de base de datos
+# db_name = "cheesefactory"              # Nombre de la base de datos
+# db_username = "admin"                  # Usuario administrador
+# db_instance_class = "db.t3.micro"     # Clase de instancia RDS
+# db_allocated_storage = 20              # Almacenamiento inicial (GB)
+# db_engine = "mysql"                    # Motor de base de datos
+# db_engine_version = "8.0"              # Versión del motor

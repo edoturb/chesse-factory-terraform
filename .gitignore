@@ -1,0 +1,26 @@
+# Terraform files
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfplan
+
+# Variable files with sensitive data
+terraform.tfvars
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.log
+cookies.txt
+
+# Scripts de diagnóstico temporales
+diagnose.sh
+check_status.sh
