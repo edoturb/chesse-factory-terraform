@@ -1,8 +1,21 @@
-# Cheese Factory - AWS Infrastructure con Terraform
+# 🧀 Cheese Factory - AWS Infrastructure con Terraform
 
-Despliegue automatizado de una aplicación web con imagenes de quesos usando Terraform en AWS. El proyecto crea 3 servidores EC2 con diferentes tipos de queso en contenedores Docker, distribuidos por un Application Load Balancer.
+[![Terraform](https://img.shields.io/badge/Terraform-v1.13+-623CE4?style=flat&logo=terraform&logoColor=white)](https://www.terraform.io/)
+[![AWS](https://img.shields.io/badge/AWS-EC2%20%7C%20RDS%20%7C%20VPC-FF9900?style=flat&logo=amazon-aws&logoColor=white)](https://aws.amazon.com/)
+[![Docker](https://img.shields.io/badge/Docker-Cheese%20Containers-2496ED?style=flat&logo=docker&logoColor=white)](https://hub.docker.com/r/errm/cheese)
 
-##  Arquitectura
+Despliegue automatizado de una aplicación web con imágenes de quesos usando **Terraform** en AWS. El proyecto crea 3 servidores EC2 con diferentes tipos de queso en contenedores Docker, distribuidos por un Application Load Balancer, junto con una base de datos MySQL RDS.
+
+## 📋 Tabla de Contenidos
+
+- [🏗️ Arquitectura](#️-arquitectura)
+- [🧀 Tipos de Queso](#-tipos-de-queso-disponibles)
+- [🔧 Conceptos de Terraform](#-conceptos-de-terraform-implementados)
+- [🚀 Despliegue](#-cómo-usar)
+- [📊 Outputs](#-outputs)
+- [🧹 Limpieza](#-destruir-infraestructura)
+
+## 🏗️ Arquitectura
 
 - **3 Instancias EC2** (t2.micro) con contenedores Docker
 - **Application Load Balancer** para distribución de tráfico
@@ -10,10 +23,13 @@ Despliegue automatizado de una aplicación web con imagenes de quesos usando Ter
 - **Base de Datos RDS MySQL** con almacenamiento cifrado
 - **Security Groups** configurados para acceso HTTP/SSH/MySQL
 
-### Tipos de Queso Disponibles:
--  **Wensleydale** (`errm/cheese:wensleydale`) - **Instancia Primaria**
--  **Cheddar** (`errm/cheese:cheddar`)
--  **Stilton** (`errm/cheese:stilton`)
+## 🧀 Tipos de Queso Disponibles
+
+| Instancia | Tipo de Queso | Imagen Docker | Estado |
+|-----------|---------------|---------------|---------|
+| 1 | **Wensleydale** | `errm/cheese:wensleydale` | ⭐ **Primaria** |
+| 2 | **Cheddar** | `errm/cheese:cheddar` | 🟢 Activa |
+| 3 | **Stilton** | `errm/cheese:stilton` | 🟢 Activa |
 
 ##  Conceptos de Terraform Implementados
 
@@ -70,18 +86,19 @@ docker_image = element(var.cheese_images, count.index)
 - Genera nombres únicos para recursos
 - Asigna configuraciones específicas por instancia
 
-## ⚡ Despliegue Rápido
+## 🚀 Cómo Usar
 
-### 1. Prerrequisitos
+### 📋 1. Prerrequisitos
 - [Terraform](https://www.terraform.io/downloads) >= 1.0
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) configurado
-- Cuenta AWS con permisos para EC2, VPC, ELB
+- Cuenta AWS con permisos para EC2, VPC, ELB, RDS
+- Par de claves AWS (Key Pair) creado
 
-### 2. Clonación y Configuración
+### 📥 2. Clonación y Configuración
 ```bash
 # Clonar repositorio
-git clone https://github.com/eduturb/cheese-factory-terraform.git
-cd cheese-factory-terraform
+git clone https://github.com/TU_USUARIO/chesse-factory-terraform.git
+cd chesse-factory-terraform
 
 # Configurar variables
 cp terraform.tfvars.example terraform.tfvars
@@ -123,6 +140,27 @@ terraform output alb_url
 ```bash
 # Obtener IPs individuales
 terraform output instance_ips
+```
+
+## 📊 Outputs
+
+El proyecto proporciona varios outputs útiles:
+
+| Output | Descripción | Ejemplo |
+|--------|-------------|---------|
+| `alb_url` | URL del Application Load Balancer | `http://cheese-alb-123456789.us-east-1.elb.amazonaws.com` |
+| `instance_ips` | IPs públicas de las 3 instancias | `["3.92.198.198", "34.204.40.24", "54.234.110.218"]` |
+| `instance_ids` | IDs de las instancias EC2 | `["i-0d08d15a7bdd92945", ...]` |
+| `db_endpoint` | Endpoint de la base de datos RDS | `cheese-factory-db.xyz.rds.amazonaws.com` |
+| `db_port` | Puerto de la base de datos | `3306` |
+| `vpc_id` | ID de la VPC creada | `vpc-07cb77b26876235a9` |
+
+```bash
+# Ver todos los outputs
+terraform output
+
+# Ver un output específico
+terraform output alb_url
 ```
 
 ## ⚙️ Variables Configurables
@@ -194,18 +232,69 @@ terraform apply
 
 > 💡 **Tip**: Ejecuta `terraform destroy` después de las pruebas para evitar costos.
 
-## 🏷️ Tags y Etiquetado
+## � Demo
+
+Una vez desplegado, puedes acceder a cada tipo de queso:
+
+### 🧀 Wensleydale (Instancia Primaria)
+```bash
+curl http://3.92.198.198
+# Muestra la página del queso Wensleydale
+```
+
+### 🧀 Cheddar
+```bash
+curl http://34.204.40.24  
+# Muestra la página del queso Cheddar
+```
+
+### 🧀 Stilton
+```bash
+curl http://54.234.110.218
+# Muestra la página del queso Stilton
+```
+
+> **Nota**: Las IPs específicas pueden variar en tu despliegue. Usa `terraform output instance_ips` para obtener las tuyas.
+
+## �🏷️ Tags y Etiquetado
 
 El proyecto implementa un sistema de etiquetado consistente:
 - **Name**: Identificador único para cada recurso
 - **IsPrimary**: Marca la instancia principal (Wensleydale) como `true`
+- **Environment**: Se asigna automáticamente basado en el tamaño de almacenamiento RDS
 
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
 
+## 🤝 Contribuir
+
+Las contribuciones son bienvenidas. Para cambios importantes:
+
+1. Abre un issue para discutir el cambio
+2. Fork el repositorio
+3. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+4. Commit tus cambios (`git commit -m 'Add: Amazing Feature'`)
+5. Push a la rama (`git push origin feature/AmazingFeature`)
+6. Abre un Pull Request
+
+## ⭐ ¿Te Gustó el Proyecto?
+
+Si este proyecto te resultó útil, considera:
+- ⭐ Darle una estrella al repositorio
+- 🍴 Fork para crear tu propia versión
+- 📢 Compartirlo con otros
+
 ---
 
-**¡Disfruta tu fábrica de quesos virtual construida con Terraform!** 🧀✨
+<div align="center">
 
-Para reportar problemas o sugerencias, abre un [issue](https://github.com/TU-USUARIO/cheese-factory-terraform/issues).
+**🧀 ¡Disfruta tu fábrica de quesos virtual construida con Terraform! ✨**
+
+[![Made with ❤️](https://img.shields.io/badge/Made%20with-❤️-red.svg)]()
+[![Terraform](https://img.shields.io/badge/Infrastructure-Terraform-623CE4?logo=terraform)]()
+[![AWS](https://img.shields.io/badge/Cloud-AWS-FF9900?logo=amazon-aws)]()
+
+[🐛 Reportar Bug](https://github.com/TU-USUARIO/chesse-factory-terraform/issues) • [💡 Solicitar Feature](https://github.com/TU-USUARIO/chesse-factory-terraform/issues) • [📖 Documentación](https://github.com/TU-USUARIO/chesse-factory-terraform/blob/main/README.md)
+
+</div>
