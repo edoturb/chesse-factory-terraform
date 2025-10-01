@@ -19,7 +19,7 @@ cheese-factory-terraform/
 ├── variables.tf              # Definición de variables
 ├── outputs.tf                # Valores de salida
 ├── terraform.tfvars.example  # Plantilla de configuración
-├── terraform.tfvars         # Configuración local
+├── .gitignore               # Archivos ignorados por Git
 └── README.md               # Esta documentación
 ```
 
