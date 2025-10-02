@@ -12,6 +12,8 @@ Este proyecto despliega 3 servidores web con diferentes tipos de queso usando co
 
 ## Despliegue
 
+Para desplegar este proyecto necesitas tener configurado AWS CLI y Terraform instalado. El proceso creará automáticamente toda la infraestructura necesaria en AWS.
+
 ### 1. Configurar variables
 ```bash
 cp terraform.tfvars.example terraform.tfvars
