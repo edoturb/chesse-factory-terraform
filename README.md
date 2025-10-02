@@ -1,83 +1,54 @@
 # Cheese Factory Terraform
 
-Este proyecto crea 3 servidores web con diferentes tipos de queso usando contenedores Docker y una base de datos RDS MySQL.
+Proyecto que despliega 3 servidores web con diferentes tipos de queso usando contenedores Docker y una base de datos RDS MySQL.
 
 ## Arquitectura
 
 - 3 Instancias EC2 con contenedores Docker (Wensleydale, Cheddar, Stilton)
 - Application Load Balancer para distribuir tráfico
 - VPC con subnets públicas y privadas
-- Base de datos RDS MySQL para almacenamiento
+- Base de datos RDS MySQL
 - Security Groups configurados
 
-## Instrucciones de Despliegue
+## Despliegue
 
-### 1. Clonar el repositorio
-```bash
-git clone https://github.com/edoturb/chesse-factory-terraform.git
-cd chesse-factory-terraform
-```
-
-### 2. Configurar credenciales AWS
-```bash
-aws configure
-# o
-aws sso login
-```
-
-### 3. Configurar variables requeridas
-Copia el archivo de ejemplo y configúralo:
+### 1. Configurar variables
 ```bash
 cp terraform.tfvars.example terraform.tfvars
 ```
-
-Edita `terraform.tfvars` con tus valores:
+Editar `terraform.tfvars` con tus valores:
 ```hcl
-# OBLIGATORIAS - Debes configurar estos valores
-my_ip = "TU_IP_PUBLICA/32"        # Obtener con: curl ifconfig.me
-key_name = "TU_AWS_KEY_PAIR"      # Tu AWS Key Pair existente
-db_password = "TuContraseñaSegura123!"  # Contraseña para la base de datos
-
-# OPCIONALES - Puedes cambiar si quieres
-# aws_region = "us-west-2"
-# instance_count = 3
-# instance_type = "t2.small"
+my_ip = "TU_IP_PUBLICA/32"        # curl ifconfig.me
+key_name = "TU_AWS_KEY_PAIR"      # aws ec2 describe-key-pairs
+db_password = "TuContraseñaSegura123!"
 ```
 
-### 4. Desplegar la infraestructura
+### 2. Ejecutar despliegue
 ```bash
 terraform init
-terraform plan
-terraform apply
+terraform plan -var-file="terraform.tfvars"
+terraform apply -var-file="terraform.tfvars"
 ```
 
-## Estructura del Proyecto
-
-```
-cheese-factory-terraform/
-│
-├── main.tf                   # Recursos AWS (VPC, EC2, ALB, RDS)
-├── variables.tf             # Variables de entrada
-├── outputs.tf               # Salidas del proyecto
-├── user-data.sh             # Configuración inicial de EC2
-├── terraform.tfvars.example # Plantilla de variables
-└── README.md                # Documentación
+### 3. Obtener URL de la aplicación
+```bash
+terraform output alb_url
 ```
 
-## Componentes Desplegados
+## Recursos Desplegados
 
-- **VPC**: Red privada virtual con CIDR 10.0.0.0/16
-- **Subnets**: 3 públicas y 2 privadas en diferentes AZs
-- **EC2**: 3 instancias t2.micro con Docker
-- **ALB**: Application Load Balancer para distribución de tráfico
-- **RDS**: Base de datos MySQL 8.0 en subnets privadas
-- **Security Groups**: Configuración de firewall segura
+- **VPC** con subnets públicas y privadas
+- **3 EC2** t2.micro con contenedores Docker  
+- **ALB** para distribución de tráfico
+- **RDS MySQL** 8.0 en subnets privadas
+- **Security Groups** configurados
 
 ## Limpieza
 
-Para eliminar todos los recursos:
 ```bash
-terraform destroy
+terraform destroy -var-file="terraform.tfvars"
 ```
+
+
 
 
