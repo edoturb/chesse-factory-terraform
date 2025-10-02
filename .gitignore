@@ -24,3 +24,10 @@ override.tf.json
 # OS files
 .DS_Store
 Thumbs.db
+
+# Key Pairs generados automáticamente
+*.pem
+cheese-factory-key-*
+
+# Logs del script de setup
+setup.log

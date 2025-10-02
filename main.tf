@@ -1,4 +1,4 @@
-# Terraform configuration for Cheese Factory
+# Configuracion del proveedor y recursos principales
 terraform {
   required_providers {
     aws = {
@@ -8,12 +8,12 @@ terraform {
   }
 }
 
-# Configure the AWS Provider
+# configuracion AWS
 provider "aws" {
   region = var.aws_region
 }
 
-# Data source for availability zones
+# Obtener zonas de disponibilidad
 data "aws_availability_zones" "available" {
   state = "available"
 }
@@ -190,7 +190,7 @@ resource "aws_instance" "web" {
   }
 }
 
-# Application Load Balancer
+# Balanceador de carga - ALB
 resource "aws_lb" "cheese_alb" {
   name               = "cheese-alb"
   internal           = false
@@ -218,12 +218,6 @@ resource "aws_lb_target_group" "cheese_tg" {
     protocol            = "HTTP"
     timeout             = 10 # Más tiempo
     unhealthy_threshold = 3  # Más tolerante
-  }
-
-  stickiness {
-    enabled         = false # Deshabilitado para ver todos los quesos
-    type            = "lb_cookie"
-    cookie_duration = 300
   }
 }
 
