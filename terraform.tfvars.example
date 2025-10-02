@@ -8,12 +8,11 @@
 
 # Tu IP pública para acceso SSH
 # Obtener con: curl ifconfig.me
-my_ip = "YOUR_PUBLIC_IP/32"    # Ejemplo: "203.0.113.1/32"
+my_ip = "YOUR_PUBLIC_IP/32"    # Ejemplo: "190.20.192.78/32"
 
 # Nombre de tu AWS Key Pair (debe existir en AWS)
 # Ver disponibles con: aws ec2 describe-key-pairs
-# Ver disponibles con: aws ec2 describe-key-pairs
-key_name = "YOUR_AWS_KEY_PAIR_NAME"
+key_name = "YOUR_AWS_KEY_PAIR_NAME"    # Ejemplo: "vockey"
 
 # VARIABLES OPCIONALES (usar valores por defecto)
 # ================================================
