@@ -10,9 +10,9 @@ Proyecto que despliega 3 servidores web con diferentes tipos de queso usando con
 - Base de datos RDS MySQL
 - Security Groups configurados
 
-## Despliegue
+Despliegue
 
-### 1. Configurar variables
+ 1. Configurar variables
 ```bash
 cp terraform.tfvars.example terraform.tfvars
 ```
@@ -23,19 +23,19 @@ key_name = "TU_AWS_KEY_PAIR"      # aws ec2 describe-key-pairs
 db_password = "TuContraseñaSegura123!"
 ```
 
-### 2. Ejecutar despliegue
+2. Ejecutar despliegue
 ```bash
 terraform init
 terraform plan -var-file="terraform.tfvars"
 terraform apply -var-file="terraform.tfvars"
 ```
 
-### 3. Obtener URL de la aplicación
+ 3. Obtener URL de la aplicación
 ```bash
 terraform output alb_url
 ```
 
-## Recursos Desplegados
+ Recursos Desplegados
 
 - **VPC** con subnets públicas y privadas
 - **3 EC2** t2.micro con contenedores Docker  
